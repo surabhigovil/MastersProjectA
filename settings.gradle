@@ -1,0 +1,3 @@
+rootProject.name = "Lipscribe"
+include ':app'
+include ':openCVLibrary3415'
