@@ -29,20 +29,30 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 
 
 public class FaceDetection {
     private CascadeClassifier facedetector;
-    private Interpreter interpreter;
+    private Interpreter interpreter,interpreter2;
     File file;
+
     public FaceDetection(AssetManager assetManager, Context context, String modelPath) {
-        Log.d("Face detect","constructor");
+        Log.i("Face detect","constructor");
         Interpreter.Options options=new Interpreter.Options();
         GpuDelegate gpuDelegate = new GpuDelegate();
         options.addDelegate(gpuDelegate);
         options.setNumThreads(4); // change number of thread according to your phone
 
-        // load CNN model
+//        load tflite modelPath
+//        try{
+//            interpreter2=new Interpreter(loadModelFile(assetManager,"model_2.tflite"),options);
+//        }
+//        catch(IOException e){
+//            e.printStackTrace();
+//        }
+
+//         load CNN model
         try {
             interpreter=new Interpreter(loadModelFile(assetManager,modelPath),options);
 
@@ -65,6 +75,7 @@ public class FaceDetection {
             facedetector = new CascadeClassifier(file.getAbsolutePath());
             if (facedetector.empty()) {
                 facedetector = null;
+                Log.i("face detector","is null");
             } else {
                 dir.delete();
             }
@@ -82,9 +93,11 @@ public class FaceDetection {
         Core.flip(b,gray,1);
         b.release();
         MatOfRect facedetection = new MatOfRect();
-
+        Log.d("debug","face detection");
         facedetector.detectMultiScale(gray, facedetection);
         for (Rect rect : facedetection.toArray()) {
+            Log.i("rectangle","rectangle");
+            Log.i("rectangle", String.valueOf(rect.x));
             Imgproc.rectangle(rgba, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 0, 0),3);
             // now convert cropped gray scale face image to bitmap
             Bitmap bitmap=null;
@@ -112,7 +125,7 @@ public class FaceDetection {
             Log.d("MainActivity","loaded");
             //Log.d("byteBuffe", String.valueOf(byteBuffer));
             Log.d("result", String.valueOf(result));
-            Log.d("inter", String.valueOf(interpreter));
+//            Log.d("inter", String.valueOf(interpreter));
             interpreter.run(byteBuffer,result);
                // height,width of cropped face is different from input size of Interpreter
             // we have to scale each key point co-ordinate for cropped face
@@ -140,7 +153,7 @@ public class FaceDetection {
                 Imgproc.putText(cropped_rgba, String.valueOf(j),new Point(x_val*x_scale,y_val*y_scale),1,1,new Scalar(0,255,0,255),1);
             }
 
-            // replace cropped_rgba with original face on mat_image
+//             replace cropped_rgba with original face on mat_image
             cropped_rgba.copyTo(new Mat(rgba,roi));
         }
         Mat c=rgba.t();
@@ -148,6 +161,18 @@ public class FaceDetection {
         c.release();
         return rgba;
     }
+//    public String prediction(ArrayList<Mat> images)
+//    {
+//        String p = null;
+////        Bitmap bitmap=null;
+////        bitmap=Bitmap.createBitmap(cropped.cols(),cropped.rows(),Bitmap.Config.ARGB_8888);
+////        Utils.matToBitmap(images.get(0),bitmap);
+////        Bitmap scaledBitmap=Bitmap.createScaledBitmap(bitmap, inputsize, inputsize,false);
+////        ByteBuffer byteBuffer=convertBitmapToByteBuffer(scaledBitmap);
+//
+//        interpreter2.run(images,p);
+//        return p;
+//    }
     private ByteBuffer convertBitmapToByteBuffer(Bitmap scaledBitmap) {
         ByteBuffer byteBuffer;
         int inputSize=150;

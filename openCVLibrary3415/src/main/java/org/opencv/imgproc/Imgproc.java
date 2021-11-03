@@ -17,10 +17,6 @@ import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.core.TermCriteria;
-import org.opencv.imgproc.CLAHE;
-import org.opencv.imgproc.GeneralizedHoughBallard;
-import org.opencv.imgproc.GeneralizedHoughGuil;
-import org.opencv.imgproc.LineSegmentDetector;
 import org.opencv.utils.Converters;
 
 // C++: class Imgproc
@@ -9467,7 +9463,6 @@ public class Imgproc {
      * The function cv::putText renders the specified text string in the image. Symbols that cannot be rendered
      * using the specified font are replaced by question marks. See #getTextSize for a text rendering code
      * example.
-     *
      * @param img Image.
      * @param text Text string to be drawn.
      * @param org Bottom-left corner of the text string in the image.
@@ -9475,7 +9470,6 @@ public class Imgproc {
      * @param fontScale Font scale factor that is multiplied by the font-specific base size.
      * @param color Text color.
      * @param thickness Thickness of the lines used to draw a text.
-     * it is at the top-left corner.
      */
     public static void putText(Mat img, String text, Point org, int fontFace, double fontScale, Scalar color, int thickness) {
         putText_2(img.nativeObj, text, org.x, org.y, fontFace, fontScale, color.val[0], color.val[1], color.val[2], color.val[3], thickness);

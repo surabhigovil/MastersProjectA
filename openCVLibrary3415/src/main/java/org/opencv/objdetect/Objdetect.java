@@ -29,7 +29,6 @@ public class Objdetect {
             DetectionBasedTracker_DETECTED_TEMPORARY_LOST = 2,
             DetectionBasedTracker_WRONG_OBJECT = 3;
 
-
     //
     // C++:  void cv::groupRectangles(vector_Rect& rectList, vector_int& weights, int groupThreshold, double eps = 0.2)
     //
@@ -45,9 +44,6 @@ public class Objdetect {
         Mat weights_mat = weights;
         groupRectangles_1(rectList_mat.nativeObj, weights_mat.nativeObj, groupThreshold);
     }
-
-
-
 
     // C++:  void cv::groupRectangles(vector_Rect& rectList, vector_int& weights, int groupThreshold, double eps = 0.2)
     private static native void groupRectangles_0(long rectList_mat_nativeObj, long weights_mat_nativeObj, int groupThreshold, double eps);

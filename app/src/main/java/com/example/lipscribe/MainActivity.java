@@ -3,6 +3,7 @@ package com.example.lipscribe;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,8 +18,12 @@ import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
-
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 import java.io.IOException;
+import java.io.*;
+import java.util.*;
 
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
@@ -28,7 +33,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     JavaCameraView javaCameraView;
     private int inputsize=150;
     private Mat rgba, gray;
-    private FaceDetection faceDetection;
+    private FaceDetection faceDetection, phrasedetection;
+    List<Mat> images = new ArrayList<>();
     public void startButton(View Button)
     {
         if(start==false)
@@ -84,6 +90,13 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStopped() {
         if(start==false) {
+            if(!images.isEmpty()) {
+                Imgproc.putText(rgba, String.valueOf("Stopped"), new Point(100,200), 2, 2, new Scalar(0, 0, 255), 3);
+//                String p = faceDetection.prediction((ArrayList<Mat>) images);
+//                Log.i("prediction ", p);
+                images = null;
+            }
+
             rgba.release();
             gray.release();
         }
@@ -94,12 +107,19 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         rgba = inputFrame.rgba();
         gray = inputFrame.gray();
+
+        faceDetection= new FaceDetection(getAssets(),this,"model68.tflite");
         if(start==true) {
             Log.i("Debug","started on cam");
-            faceDetection= new FaceDetection(getAssets(),this,"model68.tflite");
+//            faceDetection= new FaceDetection(getAssets(),this,"model68.tflite");
+//            faceDetection= new FaceDetection(getAssets(),this,"model68.tflite");
             Log.i("Debug","loaded constructor");
             rgba=faceDetection.mouthExtraction(rgba,gray);
-            Log.i("Debug","output");
+            images.add(rgba);
+            Log.i("Debug", String.valueOf(images.size()));
+//            Imgproc.putText(rgba, images.get(0), new Point(100,200), 2, 2, new Scalar(255, 0, 0), 3);
+
+
         }
         return rgba;
 
